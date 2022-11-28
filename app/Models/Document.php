@@ -17,4 +17,13 @@ class Document extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'document_id', 'id');
+    }
+    public function latestReservations()
+{
+    return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('date')->first();
+}
+
 }

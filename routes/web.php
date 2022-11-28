@@ -25,6 +25,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('file-upload', [FileController::class, 'index'])->name('file-upload');
+    Route::get('file-upload', [FileController::class, 'create'])->name('file-upload');
 Route::post('file-upload', [FileController::class, 'store'])->name('file.store');
+Route::get('file-delete/{id}', [FileController::class, 'destroy'])->name('file.destroy');
 });
