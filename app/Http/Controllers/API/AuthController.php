@@ -23,7 +23,7 @@ class AuthController extends Controller
 
 
         $validator = Validator::make($request->all(),[
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255','unique:users'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', (new Password)->length(10)->requireNumeric()],
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
@@ -104,7 +104,6 @@ class AuthController extends Controller
         $user = auth()->user();
 
             $validator = Validator::make($request->all(),[
-
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'email:rfc,dns', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],

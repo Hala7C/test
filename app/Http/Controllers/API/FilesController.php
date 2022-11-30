@@ -12,17 +12,23 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class FilesController extends Controller
 {
     public function storeDocument(Request $request)
     {
 
-        $request->validate([
-            'file' => 'required|mimes:pdf,xlx,csv|max:2048|unique:documents,name',
+        $validator = Validator::make($request->all(),[
+            'file' => ['required','mimes:pdf,xlx,csv','max:2048',Rule::unique('documents','name')],
         ]);
 
-        $fileName = time().'.'.$request->file->extension();
+        if($validator->fails()){
+            return response()->json($validator->errors(),400);
+        }
+        // $fileName = time().'.'.$request->file->extension();
+        $fileName = $request->file('file')->getClientOriginalName();
 
         $request->file->move(public_path('uploads'), $fileName);
 

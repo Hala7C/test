@@ -21,9 +21,13 @@ class Document extends Model
     {
         return $this->hasMany(Reservation::class, 'document_id', 'id');
     }
+    public function OrderdReservations()
+    {
+        return $this->hasMany(Reservation::class, 'document_id', 'id')->orderBy('created_at', 'desc')->get();
+    }
     public function latestReservations()
 {
-    return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('date')->first();
+    return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('created_at')->first();
 }
 
 }

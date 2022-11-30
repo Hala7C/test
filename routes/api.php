@@ -53,8 +53,10 @@ Route::middleware([
             Route::get('/file/checkin/{id}',[FileOperationController::class,'CheckIn']);
             Route::get('/file/checkout/{id}',[FileOperationController::class,'CheckOut']);
             Route::post('/file/bulkCheckIn',[FileOperationController::class,'bulkCheckIn']);
+
+
             Route::get('/myfiles',[Display::class,'myFiles']);
             Route::get('/group/{id}/documents',[Display::class,'documentsGroup']);
-
+            Route::get('file/{id}/history',[Display::class,'documentHisory']);
 
 });

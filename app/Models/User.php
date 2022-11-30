@@ -73,6 +73,6 @@ class User extends Authenticatable
     }
 
     public function latestReservation(){
-        return  $this->hasMany(Reservation::class, 'user_id', 'id')->latest('date')->first();
+        return  $this->hasMany(Reservation::class, 'user_id', 'id')->orderBy('created_at', 'desc')->first();
     }
 }

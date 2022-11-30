@@ -18,5 +18,10 @@ class Reservation extends Model
         return $this->belongsTo(Document::class,'document_id','id');
     }
 
-
+    public function edits(){
+        return $this->hasMany(Edit_File::class,'reservation_id','id');
+    }
+    public function Orderededits(){
+        return $this->hasMany(Edit_File::class,'reservation_id','id')->orderBy('created_at', 'desc')->get();
+    }
 }

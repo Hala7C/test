@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Group;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -30,20 +31,28 @@ class FileOperationController extends Controller
         $status=400;
         $user=Auth::user();
         $document=Document::find($fileId);
-        $l=User::find($user->id)->latestReservation();
+        // $l=User::find($user->id)->latestReservation();
+        $l=Reservation::where('user_id',$user->id)->where('document_id',$document->id)->latest('created_at')->first();
         if($document->status=='booked'){
-            if($l->document_id==$document->id){
-                    $this->validate($request,[
-                        'file' => 'required|mimes:pdf,xlx,csv|max:2048|unique:documents,name',
-                    ]);
-                    $fileName = time().'.'.$request->file->extension();
+            if($l!=null){
+                    $fileName =$request->file('file')->getClientOriginalName();
+                    if($fileName==$document->name){
+                        $this->validate($request,[
+                            'file' => 'required|mimes:pdf,xlx,csv|max:2048',
+                        ]);
+                    }else{
+                        $this->validate($request,[
+                            'file' => 'required|mimes:pdf,xlx,csv|max:2048|unique:documents,name',
+                        ]);
+                    }
                     $request->file->move(public_path('uploads'), $fileName);
                     $document->name=$fileName;
                     $document->path='uploads/'.$fileName;
                     $document->save();
+                    event('Edit.register',$l->id);
                     $msg='You edit the documents successfully';
                     $status=210;
-                }else{
+             }else{
                     $msg='You do not have reservation on this file';
                     $status=400;
                 }
@@ -85,6 +94,8 @@ class FileOperationController extends Controller
             }
 
             public function CheckIn($document_id){
+                try{
+                DB::beginTransaction();
                 $document=Document::find($document_id);
                 if($document->status=='free'){
                     $document->status='booked';
@@ -94,11 +105,18 @@ class FileOperationController extends Controller
                         'document_id'=>$document_id,
                         'date'=>Carbon::now()->setTimezone("GMT+3")->format('Y-m-d H:i:s')
                     ]);
+                    DB::commit();
                     return response()
                     ->json(['message' =>'You Booked the document successfully' ],210);
                 }else{
                     return response()
                     ->json(['message' =>'File is booked' ],400);
+                }}catch(\Exception $exp){
+                    DB::rollBack(); // Tell Laravel, "It's not you, it's me. Please don't persist to DB"
+                    return response([
+                        'message' => $exp->getMessage(),
+                        'status' => 'failed'
+                    ], 400);
                 }
 
                 }
@@ -109,6 +127,7 @@ class FileOperationController extends Controller
                         if($l->document_id==$document_id){
                             $document->status='free';
                             $document->save();
+                            event('CheckOut.register',$l->id);
                             return response()
                             ->json(['message' =>'You UNBooked the document successfully' ],210);
                         }
