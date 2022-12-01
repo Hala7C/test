@@ -12,27 +12,30 @@ class FileController extends Controller
     {
         return view('fileUpload');
     }
-
+    public function indexF()
+    {
+        $files = Document::get();
+        return view('index', compact('files'));
+    }
     public function store(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:pdf,xlx,csv|max:2048',
         ]);
 
-        $fileName = time().'.'.$request->file->extension();
+        $fileName = time() . '.' . $request->file->extension();
 
         $request->file->move(public_path('uploads'), $fileName);
 
         Document::create([
-            'name'=>$request->file,
-            'path'=>'uploads/'.$fileName,
-            'status'=>'free',
-            'user_id'=>Auth::user()->id,
-            'group_id'=>null
+            'name' => $request->file,
+            'path' => 'uploads/' . $fileName,
+            'status' => 'free',
+            'user_id' => Auth::user()->id,
+            'group_id' => null
         ]);
         return back()
-            ->with('success','You have successfully upload file.')
+            ->with('success', 'You have successfully upload file.')
             ->with('file', $fileName);
-
     }
 }

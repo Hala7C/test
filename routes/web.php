@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
+use Laravel\Jetstream\Rules\Role;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,5 +28,12 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
     Route::get('file-upload', [FileController::class, 'index'])->name('file-upload');
-Route::post('file-upload', [FileController::class, 'store'])->name('file.store');
+    Route::post('file-upload', [FileController::class, 'store'])->name('file.store');
+    Route::get('files', [FileController::class, 'indexF'])->name('file.index');
+    Route::get('group', 'App\Http\Controllers\GroupController@index')->name('group');
+    Route::get('group\show\member\{id}', 'App\Http\Controllers\GroupController@showMemberOfGroup')->name('group.show.member');
+    Route::post('group\add\member\{group}', 'App\Http\Controllers\GroupController@addMemberToGroup')->name('add.member.group');
+    Route::middleware('check')->get('group\show\{id}', 'App\Http\Controllers\GroupController@show')->name('group.show');
+    Route::post('add\to\group\{group}', 'App\Http\Controllers\GroupController@addFileToGroupe')->name('add.file.group');
+    Route::delete('delete\to\group\{group}\{id}', 'App\Http\Controllers\GroupController@deleteFileFromGroupe')->name('delete.file.group');
 });

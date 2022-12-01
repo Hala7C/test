@@ -63,7 +63,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class, 'user_id', 'id');
     }
-    public function group()
+    public function groups()
     {
         return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id', 'id', 'id');
     }
