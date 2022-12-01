@@ -69,6 +69,9 @@ public function myGroup(){
         ],210);
 }
 public function documentsGroup($group_id){
+    $result=cache()->Cache::remember('group_documents',60*60, function () {
+
+    });
     $documents=Group::find($group_id)->documents()->get();
     $data=collect();
     if($documents !=null){
