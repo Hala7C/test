@@ -73,6 +73,8 @@ class FileOperationController extends Controller
         $files = array(
             'files' => $request->files,
         );
+        try{
+        DB::beginTransaction();
         foreach($request->input('files')  as $f){
             $document=Document::find($f);
             if($document->status=='free'){
@@ -88,7 +90,14 @@ class FileOperationController extends Controller
             $msg='booked successfully';
             $status=210;
         }
-
+        DB::commit();
+        }catch(\Exception $exp){
+            DB::rollBack(); // Tell Laravel, "It's not you, it's me. Please don't persist to DB"
+            return response([
+                'message' => $exp->getMessage(),
+                'status' => 'failed'
+            ], 400);
+        }
         return response()
                 ->json(['message' =>$msg ],$status);
             }

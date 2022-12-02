@@ -26,6 +26,23 @@ class EventServiceProvider extends ServiceProvider
         'Edit.register'=>[
             registEdit::class,
         ],
+        \Illuminate\Auth\Events\Login::class => [
+
+            \App\Listeners\LogActivity::class.'@login',
+        ],
+        \Illuminate\Auth\Events\Logout::class => [
+            \App\Listeners\LogActivity::class.'@logout',
+        ],
+        \Illuminate\Auth\Events\Registered::class => [
+            \Illuminate\Auth\Listeners\SendEmailVerificationNotification::class,
+            \App\Listeners\LogActivity::class.'@registered',
+        ],
+        \Illuminate\Auth\Events\Failed::class => [
+            \App\Listeners\LogActivity::class.'@failed',
+        ],
+        \Illuminate\Auth\Events\PasswordReset::class => [
+            \App\Listeners\LogActivity::class.'@passwordReset',
+        ]
     ];
 
     /**
