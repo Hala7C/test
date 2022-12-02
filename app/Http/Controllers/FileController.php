@@ -12,11 +12,7 @@ class FileController extends Controller
     {
         return view('fileUpload');
     }
-    public function indexF()
-    {
-        $files = Document::get();
-        return view('index', compact('files'));
-    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -32,7 +28,6 @@ class FileController extends Controller
             'path' => 'uploads/' . $fileName,
             'status' => 'free',
             'user_id' => Auth::user()->id,
-            'group_id' => null
         ]);
         return back()
             ->with('success', 'You have successfully upload file.')

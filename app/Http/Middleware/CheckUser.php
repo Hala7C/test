@@ -19,12 +19,15 @@ class CheckUser
     public function handle(Request $request, Closure $next)
     {
         $id = $request->id;
-        //  dd($request);
         $group = Group::find($id);
-        $users = $group->users->pluck('id')->toArray();
-        $user = Auth::user();
-        if (in_array($user->id, $users)) {
+        if ($group->id == 1) {
             return $next($request);
+        } else {
+            $users = $group->users->pluck('id')->toArray();
+            $user = Auth::user();
+            if (in_array($user->id, $users)) {
+                return $next($request);
+            }
         }
         $error = ['message' => 'You are denied access to this page'];
         return response()->json($error, 404);

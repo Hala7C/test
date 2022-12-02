@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDocumentsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateDocumentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('documents', function (Blueprint $table) {
+        Schema::create('edit_file', function (Blueprint $table) {
             $table->id();
-            $table->String('name');
-            $table->String('path');
-            $table->enum('status', ['free', 'booked']);
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('reservation_id')->constrained('reservations')->cascadeOnDelete();
+            $table->dateTime('edit_date');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateDocumentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('documents');
+        Schema::dropIfExists('edit_file');
     }
-}
+};

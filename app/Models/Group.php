@@ -11,10 +11,10 @@ class Group extends Model
     public $fillable = ['name'];
     public function users()
     {
-        return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id', 'id', 'id');
+        return $this->belongsToMany(User::class, 'members', 'group_id', 'user_id', 'id', 'id')->withTimestamps();
     }
     public function documents()
     {
-        return $this->hasMany(Document::class, 'group_id', 'id');
+        return $this->belongsToMany(Document::class, 'document_group', 'group_id', 'document_id', 'id', 'id')->withTimestamps();
     }
 }

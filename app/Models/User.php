@@ -59,12 +59,21 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function document()
+    public function documents()
     {
-        return $this->hasMany(Document::class, 'user_id', 'id');
+        return $this->hasMany(Document::class);
     }
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id', 'id', 'id');
+        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id')->withTimestamps();
+    }
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'user_id', 'id');
+    }
+
+    public function latestReservation()
+    {
+        return  $this->hasMany(Reservation::class, 'user_id', 'id')->orderBy('created_at', 'desc')->first();
     }
 }

@@ -49,11 +49,11 @@ class GroupController extends Controller
     {
         $group = Group::find($id);
         $user = Auth::user();
-        $files = Document::where('group_id', $group->id)->get();
+        $files = $group->documents()->get();
         //  $other_files = Document::where('group_id', '<>', $id)->get();
-        $other_files = Document::where('user_id', '=', $user->id)->where('group_id', '<>', $id)->get();
+        // $other_files = Document::where('user_id', '=', $user->id)->where('group_id', '<>', $id)->get();
 
-        return view('group.show', compact('files', 'other_files', 'group'));
+        return view('group.show', compact('files', 'group'));
     }
     public function addFileToGroupe(Group $group, Request $request)
     {
@@ -84,5 +84,27 @@ class GroupController extends Controller
         $group = Group::create($request->all());
         $user = User::find($id);
         $user->groups()->syncWithPivotValues($group->id, ['join_date' => Carbon::now()]);
+    }
+    public function deleteMember($id, $member_id)
+    {
+        $document_member_free = 0;
+        $group = Group::findOrFail($id);
+        $documents = $group->documents;
+        $count = count($documents);
+
+
+        foreach ($documents as $document) {
+            if ($document->status == 'free' || ($document->status == 'booked' && $document->latestReservations()->user_id != $member_id)) {
+                $document_member_free++;
+            }
+        }
+        // dd($document_member_free); //
+        if ($count == $document_member_free) {
+            DB::table('members')->where('user_id', $member_id)
+                ->where('group_id', $id)->delete();
+            return ['message' => 'su'];
+        }
+
+        return ['message' => 'error'];
     }
 }

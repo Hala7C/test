@@ -10,6 +10,7 @@ class Member extends Pivot
 {
     use HasFactory;
     protected $table = 'members';
+    //protected $timestamps = false;
     public function group()
     {
         return $this->belongsTo(Group::class);

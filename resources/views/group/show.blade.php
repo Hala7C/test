@@ -60,7 +60,7 @@
                     enctype="multipart/form-data">
                     @csrf
 
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label>Add File </label>
                         <select type="text" name="id" class="form-control form-select">
                             @foreach ($other_files as $file)
@@ -70,7 +70,7 @@
 
                         </select>
                         <button type="submit">Add</button>
-                    </div>
+                    </div> --}}
 
                 </form>
 

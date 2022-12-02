@@ -25,10 +25,9 @@ class AuthController extends Controller
 
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', (new Password)->length(10)->requireNumeric()],
-            // 'phone' => ['required', 'digits:10'],
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
 
@@ -42,8 +41,8 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            // 'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'role' => 'user',
         ]);
 
 
@@ -105,11 +104,9 @@ class AuthController extends Controller
         $user = auth()->user();
 
         $validator = Validator::make($request->all(), [
-
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'email:rfc,dns', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
-            //  'phone' => ['required', 'digits:10'],
         ]);
 
         if ($validator->fails()) {
@@ -123,12 +120,12 @@ class AuthController extends Controller
         $user->forceFill([
             'name' =>  $request->name,
             'email' => $request->email,
-            //  'phone' => $request->phone,
         ])->save();
 
         return response()
             ->json(['message' => 'You have successfully update '], 200);
     }
+
     /////////////////////////////////////////updatepassword
 
 
