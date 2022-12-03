@@ -30,7 +30,7 @@ class FileOperationController extends Controller
         $msg='';
         $status=400;
         $user=Auth::user();
-        $document=Document::find($fileId);
+        $document=Document::lockForUpdate()->find($fileId);
         // $l=User::find($user->id)->latestReservation();
         $l=Reservation::where('user_id',$user->id)->where('document_id',$document->id)->latest('created_at')->first();
         if($document->status=='booked'){

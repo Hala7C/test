@@ -15,9 +15,9 @@ class SystemConfiguration extends Controller
             'port'=>'numeric',
             'credential'=>'',
         ]);
-        config(['database.database' => $request->db_name]);
-        config(['database.database' => $request->db_name]);
-        config(['database.database' => $request->db_name]);
+        // config(['database.database' => $request->db_name]);
+        config(['database.connections.mysql.port' => $request->port]);
+        // config(['database.database' => $request->db_name]);
     }
     public function document_rate(){
 
