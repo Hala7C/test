@@ -63,16 +63,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class);
     }
-    public function group()
+    public function groups()
     {
-        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id');
+        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id')->withTimestamps();
     }
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'user_id', 'id');
     }
 
-    public function latestReservation(){
+    public function latestReservation()
+    {
         return  $this->hasMany(Reservation::class, 'user_id', 'id')->orderBy('created_at', 'desc')->first();
     }
 }

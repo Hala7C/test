@@ -11,7 +11,7 @@ class Document extends Model
     protected $fillable = ['name', 'path', 'status', 'user_id', 'group_id'];
     public function group()
     {
-        return $this->belongsTo(Group::class, 'group_id', 'id');
+        return $this->belongsToMany(Group::class, 'document_group', 'document_id', 'group_id', 'id', 'id')->withTimestamps();
     }
     public function user()
     {
@@ -26,8 +26,7 @@ class Document extends Model
         return $this->hasMany(Reservation::class, 'document_id', 'id')->orderBy('created_at', 'desc')->get();
     }
     public function latestReservations()
-{
-    return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('created_at')->first();
-}
-
+    {
+        return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('created_at')->first();
+    }
 }
