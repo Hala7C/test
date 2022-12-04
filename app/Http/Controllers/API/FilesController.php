@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
+// $array=$path.spilt("/");
+// $name=$array.last;
+
 class FilesController extends Controller
 {
     public function storeDocument(Request $request)
@@ -29,7 +32,9 @@ class FilesController extends Controller
         }
         // $fileName = time().'.'.$request->file->extension();
         $fileName = $request->file('file')->getClientOriginalName();
-
+        if($fileName==null){
+            return response('file unsent correctly!!',410);
+        }
         $request->file->move(public_path('uploads'), $fileName);
 
         Document::create([
