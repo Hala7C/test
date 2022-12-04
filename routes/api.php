@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\FilesController;
 use App\Http\Controllers\API\FileOperationController;
 use App\Http\Controllers\API\Display;
+use App\Http\Controllers\API\SystemConfiguration;
+use Spatie\FlareClient\Time\SystemTime;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,3 +73,4 @@ Route::middleware([
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
 });
+Route::post('/setting/connection',[SystemConfiguration::class,'db_connection']);

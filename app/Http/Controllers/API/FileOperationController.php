@@ -19,9 +19,19 @@ class FileOperationController extends Controller
 
     public function readFile($file_id){
         $document=Document::find($file_id);
+        $user=User::find($document->user_id);
+        $data=collect();
         if($document->status=='free'){
+            $data->push([
+                'id'=>$document->id,
+                'name'=>$document->name,
+                'path'=>$document->path,
+                'owner_id'=>$user->id,
+                'owner_name'=>$user->name,
+                'status'=>$document->status,
+                'group_id'=>$document->group_id,]);
             return response()
-            ->json(['message' =>'done' ],210);
+            ->json(['data' =>$data ],210);
         }
         return response()
         ->json(['message' =>'file booked' ],400);
@@ -30,7 +40,7 @@ class FileOperationController extends Controller
         $msg='';
         $status=400;
         $user=Auth::user();
-        $document=Document::find($fileId);
+        $document=Document::lockForUpdate()->find($fileId);
         // $l=User::find($user->id)->latestReservation();
         $l=Reservation::where('user_id',$user->id)->where('document_id',$document->id)->latest('created_at')->first();
         if($document->status=='booked'){
