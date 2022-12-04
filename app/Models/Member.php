@@ -11,6 +11,7 @@ class Member extends Pivot
     use HasFactory;
     protected $table = 'members';
     //protected $timestamps = false;
+    // protected $with = ['group_role'];
     public function group()
     {
         return $this->belongsTo(Group::class);

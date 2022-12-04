@@ -65,7 +65,9 @@ class User extends Authenticatable
     }
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id')->withTimestamps();
+        return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id')->withTimestamps()
+            ->using(Member::class)
+            ->withPivot(['group_id', 'user_id', 'group_role']);
     }
     public function reservations()
     {
