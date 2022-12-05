@@ -26,7 +26,7 @@ class CreateMembersheipsTable extends Migration
     /**
      * Reverse the migrations.
      *
-     * @return void
+     * @return voids
      */
     public function down()
     {

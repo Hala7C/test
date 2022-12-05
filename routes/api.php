@@ -37,6 +37,7 @@ Route::middleware([
     Route::post('group/add/member/{id}', [GroupController::class, 'addMemberToGroup']);
     Route::get('group/show/files/{id}', [GroupController::class, 'showAllFilesInGroup']);
     Route::get('group/show/files/can/{id}', [GroupController::class, 'showAllFilesCanAdd']);
+    Route::get('group/show/members/can/{id}', [GroupController::class, 'showMemberCanAdd']);
     Route::post('group/add/file/{id}', [GroupController::class, 'addFileToGroupe']);
     Route::delete('group/delete/from/group/{id}/{file_id}', [GroupController::class, 'deleteFileFromGroupe']);
     Route::delete('group/delete/group/{id}', [GroupController::class, 'deleteGroup']);

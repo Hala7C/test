@@ -7,6 +7,7 @@ use App\Models\Group;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,7 +48,8 @@ class GroupController extends Controller
         } catch (Throwable $e) {
 
             DB::rollBack();
-            return ['message' => 'Sorry You cant create new group something is error!'];
+            $message = ['message' => 'Sorry You cant create new group something is error!'];
+            return response()->json($message, 404);
         }
     }
     /**
@@ -73,26 +75,30 @@ class GroupController extends Controller
             $members  = $group->users()->paginate(6);
             return response()->json($members, 200);
         }
-        return ['message' => 'This is public group'];
+        $message = ['message' => 'This is public group all user in it'];
+        return response()->json($message, 404);
     }
     public function addMemberToGroup(Request $request, $id)
     {
-        $user = Auth::user();
+        $user_id = Auth::id();
         if ($id != 1) {
-            $user_id = $request->post('user_id');
-            $new_member = User::findOrFail($user_id);
-            if ($user->role == 'admin') {
+            $member_id = $request->post('user_id');
+            $new_member = User::findOrFail($member_id);
+            $role = Member::where('group_id', $id)->where('user_id', $user_id)->first();
+            if ($role->group_role == 'admin') {
                 DB::table('members')->insert([
-                    'user_id' => $user_id,
+                    'user_id' => $member_id,
                     'group_id' => $id,
                     'join_date' => Carbon::now(),
                     'group_role' => 'member',
                 ]);
                 return response()->json($new_member, 201);
             }
-            return ['message' => 'You cant add member to this group somethig is error . Blease try again later'];
+            $message = ['message' => 'You cant add member to this group somethig is error . Blease try again later'];
+            return response()->json($message, 404);
         }
-        return ['message' => 'You cant add member to public group .He is already exist'];
+        $message = ['message' => 'You cant add member to public group .He is already exist'];
+        return response()->json($message, 404);
     }
     /**
      * Display the specified resource.
@@ -128,7 +134,8 @@ class GroupController extends Controller
             ]);
             return response()->json($document, 201);
         }
-        return ['message' => 'Sorry you cant add this file to group something is error!!'];
+        $message = ['message' => 'Sorry you cant add this file to group something is error!!'];
+        return response()->json($message, 401);
     }
     public function deleteFileFromGroupe($id, $file_id)
     {
@@ -137,9 +144,11 @@ class GroupController extends Controller
         if ($user->id == $document->user_id) {
             DB::table('document_group')->where('document_id', $document->id)
                 ->where('group_id', $id)->delete();
-            return ['message' => 'file deleted successfuly'];
+            $message = ['message' => 'file deleted successfuly'];
+            return response()->json($message, 200);
         }
-        return ['message' => 'You cant delete this file'];
+        $message = ['message' => 'You cant delete this file'];
+        return response()->json($message, 401);
     }
 
     public function deleteGroup($id)
@@ -156,12 +165,14 @@ class GroupController extends Controller
             if ($free_file_count == $count) {
                 $group->delete();
                 $group->users()->detach();
-
-                return ['message' => 'Group deleted successfuly'];
+                $message = ['message' => 'Group deleted successfuly'];
+                return response()->json($message, 200);
             }
-            return ['message' => 'Group cant delete '];
+            $message = ['message' => 'Group cant delete . There are files still blocked '];
+            return response()->json($message, 404);
         }
-        return ['message' => 'You cant delete the public group'];
+        $message = ['message' => 'You cant delete the public group'];
+        return response()->json($message, 404);
     }
 
     /**
@@ -172,23 +183,33 @@ class GroupController extends Controller
      */
     public function deleteMember($id, $member_id)
     {
-        $group = Group::findOrFail($id);
-        if ($group->id != 1) {
-            $document_member_free = 0;
-            $documents = $group->documents;
-            $count = count($documents);
-            foreach ($documents as $document) {
-                if ($document->status == 'free' || ($document->status == 'booked' && $document->latestReservations()->user_id != $member_id)) {
-                    $document_member_free++;
+        $user_id = Auth::id();
+        $role = Member::where('group_id', $id)->where('user_id', $user_id)->first();
+        if ($role->group_role == 'admin') {
+            $group = Group::findOrFail($id);
+            if ($group->id != 1) {
+                $document_member_free = 0;
+                $documents = $group->documents;
+                $count = count($documents);
+                foreach ($documents as $document) {
+                    if ($document->status == 'free' || ($document->status == 'booked' && $document->latestReservations()->user_id != $member_id)) {
+                        $document_member_free++;
+                    }
                 }
+                if ($count == $document_member_free) {
+                    DB::table('members')->where('user_id', $member_id)
+                        ->where('group_id', $id)->delete();
+                    $member_deleted = User::where('id', $member_id)->first();
+                    $message = ['message' => 'You are delete member successfly :)'];
+                    return response()->json(['data' => $member_deleted, 'message' => $message], 200);
+                }
+                $message = ['message' => "You cannot delete this member because he is still blocking a file"];
+                return response()->json($message, 401);
             }
-            if ($count == $document_member_free) {
-                DB::table('members')->where('user_id', $member_id)
-                    ->where('group_id', $id)->delete();
-                return ['message' => 'You are delete member successfly :)'];
-            }
-            return ['message' => "You cannot delete this member because he is still blocking a file"];
+            $message = ['message' => 'You cant delete member from public group'];
+            return response()->json($message, 401);
         }
-        return ['message' => 'You cant delete member from public group'];
+        $message = ['message' => 'You cant delete member You are not admin :('];
+        return response()->json($message, 401);
     }
 }
