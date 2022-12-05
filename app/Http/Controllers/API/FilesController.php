@@ -69,19 +69,5 @@ class FilesController extends Controller
 
 
 
-    public function addFile2Group(Request $request, $group_id)
-    {
-        $this->validate($request, [
-            'document_id' => "required",
-            'group_id' => "required",
-            'name' => "required",
-            'path' => "required",
-            'status' => "required",
-            'user_id' => "required",
-        ]);
 
-        $document = Document::find($request->document_id);
-        $document->group_id = $group_id;
-        $document->save();
-    }
 }
