@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Groups;
+namespace App\Services\Group;
 
 use App\Models\Document;
 use App\Models\Group;
@@ -12,9 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\Groups\GroupRepository;
 use Throwable;
 
-class GroupModelRepository implements GroupRepository
+class GroupServices implements GroupRepository
 {
     public function index()
     {
@@ -195,7 +196,6 @@ class GroupModelRepository implements GroupRepository
         $status = 401;
         return $response = ['data' => $data, 'status' => $status];
     }
-
     /**
      * Remove the specified resource from storage.
      *
