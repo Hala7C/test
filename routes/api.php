@@ -73,4 +73,4 @@ Route::middleware([
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
 });
-Route::post('/setting/connection',[SystemConfiguration::class,'db_connection']);
+Route::post('/setting/connection', [SystemConfiguration::class, 'db_connection']);

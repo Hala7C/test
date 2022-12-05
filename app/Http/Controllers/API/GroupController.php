@@ -87,7 +87,7 @@ class GroupController extends Controller
             $role = Member::where('group_id', $id)->where('user_id', $user_id)->first();
             if ($role->group_role == 'admin') {
                 DB::table('members')->insert([
-                    'user_id' => $user_id,
+                    'user_id' => $member_id,
                     'group_id' => $id,
                     'join_date' => Carbon::now(),
                     'group_role' => 'member',
@@ -199,8 +199,9 @@ class GroupController extends Controller
                 if ($count == $document_member_free) {
                     DB::table('members')->where('user_id', $member_id)
                         ->where('group_id', $id)->delete();
+                    $member_deleted = User::where('id', $member_id)->first();
                     $message = ['message' => 'You are delete member successfly :)'];
-                    return response()->json($message, 200);
+                    return response()->json(['data' => $member_deleted, 'message' => $message], 200);
                 }
                 $message = ['message' => "You cannot delete this member because he is still blocking a file"];
                 return response()->json($message, 401);
