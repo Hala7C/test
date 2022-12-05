@@ -86,11 +86,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'isAdmin',
 ])->group(function () {
-    Route::post('/setting/db/connection',[SystemConfiguration::class,'db_connection']);
-    Route::post('/setting/file/numbers',[SystemConfiguration::class,'uploadsNo']);
-    Route::post('/setting/log/level',[SystemConfiguration::class,'logLevel']);
-    Route::post('/setting/db/engine',[SystemConfiguration::class,'db_engine']);
-    Route::get('/setting/get/all',[SystemConfiguration::class,'getCurrentEnvValue']);
+    Route::post('/setting/db/connection', [SystemConfiguration::class, 'db_connection']);
+    Route::post('/setting/file/numbers', [SystemConfiguration::class, 'uploadsNo']);
+    Route::post('/setting/log/level', [SystemConfiguration::class, 'logLevel']);
+    Route::post('/setting/db/engine', [SystemConfiguration::class, 'db_engine']);
+    Route::get('/setting/get/all', [SystemConfiguration::class, 'getCurrentEnvValue']);
 });
-
-

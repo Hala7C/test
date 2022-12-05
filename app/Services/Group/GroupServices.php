@@ -25,15 +25,13 @@ class GroupServices implements GroupRepository
         $groups = $user->groups()->paginate(4);
         return $groups;
     }
-    public function store(Request $request)
+    public function store($name)
     {
         $id = Auth::id();
-        $request->validate([
-            'name' => 'required|string|not_in:public',
-        ]);
         try {
             DB::beginTransaction();
-            $group = Group::create($request->all());
+            $input = ['name' => $name];
+            $group = Group::create($input);
             DB::table('members')->insert([
                 'user_id' => $id,
                 'group_id' => $group->id,
@@ -41,13 +39,15 @@ class GroupServices implements GroupRepository
                 'group_role' => 'admin',
             ]);
             DB::commit();
-            $data = ['group' => $group];
-            return $data;
+            $data = ['data' => $group];
+            $status = 200;
+            return $response = ['data' => $data, 'status' => $status];
         } catch (Throwable $e) {
 
             DB::rollBack();
             $data = ['message' => 'Sorry You cant create new group something is error!'];
-            return $data;
+            $status = 401;
+            return $response = ['data' => $data, 'status' => $status];
         }
     }
     /**

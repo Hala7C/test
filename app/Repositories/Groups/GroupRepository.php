@@ -2,15 +2,12 @@
 
 namespace App\Repositories\Groups;
 
-use App\Models\Group;
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 interface GroupRepository
 {
 
     public function index();
-    public function  store(Request $request);
+    public function  store($name);
     public function addMemberToGroup($member_id, $group_id);
     public function showMemberOfGroup($id);
     public function showMemberCanAdd($id);

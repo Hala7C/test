@@ -22,13 +22,6 @@ class GroupController extends Controller
     {
         $this->group_repository = $group_repository;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
-
     public function index()
     {
         $data = $this->group_repository->index();
@@ -36,8 +29,14 @@ class GroupController extends Controller
     }
     public function store(Request $request)
     {
-        $data = $this->group_repository->store($request);
-        return response()->json($data, 200);
+        $request->validate([
+            'name' => 'required|string|not_in:public',
+        ]);
+        $name = $request->post('name');
+        $response  = $this->group_repository->store($name);
+        $data = $response['data'];
+        $status =  $response['status'];
+        return response()->json($data, $status);
     }
     public function showMemberCanAdd($id)
     {
