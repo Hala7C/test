@@ -59,9 +59,8 @@ Route::middleware([
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'isUser',
 ])->group(function () {
-    Route::post('file/create', [FilesController::class, 'storeDocument']);
+    // Route::post('file/create', [FilesController::class, 'storeDocument']);
     Route::delete('file/delete/{id}', [FilesController::class, 'destroyDocument']);
 
     Route::get('/file/read/{id}', [FileOperationController::class, 'readFile']);
@@ -73,4 +72,25 @@ Route::middleware([
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
 });
-Route::post('/setting/connection', [SystemConfiguration::class, 'db_connection']);
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'Uploads_count'
+])->group(function () {
+    Route::post('file/create', [FilesController::class, 'storeDocument']);
+});
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'isAdmin',
+])->group(function () {
+    Route::post('/setting/db/connection',[SystemConfiguration::class,'db_connection']);
+    Route::post('/setting/file/numbers',[SystemConfiguration::class,'uploadsNo']);
+    Route::post('/setting/log/level',[SystemConfiguration::class,'logLevel']);
+    Route::post('/setting/db/engine',[SystemConfiguration::class,'db_engine']);
+    Route::get('/setting/get/all',[SystemConfiguration::class,'getCurrentEnvValue']);
+});
+
+

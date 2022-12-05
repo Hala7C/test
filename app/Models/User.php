@@ -65,6 +65,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class);
     }
+
     public function groups()
     {
         return $this->belongsToMany(Group::class, 'members', 'user_id', 'group_id')->withTimestamps()

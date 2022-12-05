@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -199,6 +201,13 @@ return [
 
     ],
 
+
+    'count' =>
+        [
+            'number' => env('COUNT_NO', '5'),
+        ],
+
+    'log_level' => env('APP_LOG_LEVEL', 'error'),
     /*
     |--------------------------------------------------------------------------
     | Class Aliases

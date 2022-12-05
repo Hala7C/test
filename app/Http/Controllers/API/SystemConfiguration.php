@@ -3,23 +3,62 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class SystemConfiguration extends Controller
 {
-    public function db_engine(){
-
+    public function getCurrentEnvValue(){
+        $data=collect();
+        $port=            env('DB_PORT');
+        $url=             env('DATABASE_URL');
+        $password=        env('DB_PASSWORD');
+        $name=            env('DB_DATABASE');
+        $username=        env('DB_USERNAME');
+        $engine=          env('DB_ENGINE');
+        $loglevel=        env('LOG_LEVEL');
+        $allowed_uploads= env('COUNT_NO');
+        $data->push([
+            'url'=>$url,
+            'port'=>$port,
+            'db_username'=>$username,
+            'db_password'=>$password,
+            'db_name'=>$name,
+            'db_engine'=>$engine,
+            'log_level'=>$loglevel,
+            'allowed_number_of_files'=>$allowed_uploads,
+        ]);
+        return response()->json(['data'=>$data],210);
+    }
+    public function db_engine(Request $request){
+        $engines=array('innodb','myisam','memory','merge','example','csv','aria','mrg_myisam','sequence','performance_schema');
+        $validator = Validator::make($request->all(), [
+            'engine'=>'string|in:' . implode(',', $engines),
+        ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+            if(isset($request->engine)){
+                $this->updateDotEnvValue('DB_ENGINE', $request->engine);
+            }
+            return response('done',210);
+    }
+    public function logLevel(Request $request){
+        $levels=array('debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency');
+        $validator = Validator::make($request->all(), [
+            'level'=>'string|in:' . implode(',', $levels),
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+            if(isset($request->level)){
+                $this->updateDotEnvValue('LOG_LEVEL', $request->level);
+            }
+            return response('done',210);
     }
     public function db_connection(Request $request){
-        /*
-        My advise for all that have this problem, is use a double db connection, one for the main db (server db) and one for customer db. In this way you can switch to both db, with this simple code:
-        Config::set("database.default", "sqlsrvCustomer");
-        \Illuminate\Support\Facades\DB::reconnect();
-        With the first command you can choose the customer DB and with the second you can connect to it.
-        */
-
-
         $data=collect();
         $this->validate($request,[
             'url'=>'string',
@@ -29,31 +68,75 @@ class SystemConfiguration extends Controller
             'db_name'=>'string',
         ]);
         DB::disconnect();
-        config(['database.connections.mysql.url' => $request->url]);
-        config(['database.connections.mysql.port' => $request->port]);
-        config(['database.connections.mysql.username' => $request->db_username]);
-        config(['database.connections.mysql.password' => $request->db_password]);
-        config(['database.connections.mysql.database' => $request->db_name]);
-        $port=       Config::get('database.connections.mysql.port');
-        $username=   Config::get('database.connections.mysql.username');
-        $url=        Config::get('database.connections.mysql.url');
-        $password=   Config::get('database.connections.mysql.password');
-        $driver=     Config::get('database.connections.mysql.driver');
-        $name=       Config::get('database.connections.mysql.database');
-
+        if(isset($request->url)){
+            $this->updateDotEnvValue('DATABASE_URL', $request->url);
+        }
+        if(isset( $request->port)){
+            $this->updateDotEnvValue('DB_PORT', $request->port);
+        }
+        if(isset($request->db_username)){
+            $this->updateDotEnvValue('DB_USERNAME', $request->db_username);
+        }
+        if(isset( $request->db_password)){
+            $this->updateDotEnvValue('DB_PASSWORD', $request->db_password);
+        }
+        if(isset( $request->db_name)){
+            $this->updateDotEnvValue('DB_DATABASE', $request->db_name);
+        }
         DB::purge('mysql');
         DB::reconnect();
-        $data->push([
-            'url'=>$url,
-            'port'=>$port,
-            'db_username'=>$username,
-            'db_password'=>$password,
-            'driver'=>$driver,
-            'db_name'=>$name,
-        ]);
-        return response()->json(['data'=> $data],210);
-    }
-    public function document_rate(){
 
+        return response()->json(['data'=> 'done'],210);
     }
+    protected function uploadsNo($key='COUNT_NO',Request $request, $delim='')
+{
+
+    $path = base_path('.env');
+    // get old value from current env
+    $oldValue = env($key);
+
+    // was there any change?
+    if ($oldValue === $request->number) {
+        return;
+    }
+
+    // rewrite file content with changed data
+    if (file_exists($path)) {
+        // replace current value with new value
+        file_put_contents(
+            $path, str_replace(
+                $key.'='.$delim.$oldValue.$delim,
+                $key.'='.$delim.$request->number.$delim,
+                file_get_contents($path)
+            )
+        );
+    }
+    return response('done',210);
+}
+
+protected function updateDotEnvValue($key,$request, $delim='')
+{
+
+    $path = base_path('.env');
+    // get old value from current env
+    $oldValue = env($key);
+
+    // was there any change?
+    if ($oldValue === $request) {
+        return;
+    }
+
+    // rewrite file content with changed data
+    if (file_exists($path)) {
+        // replace current value with new value
+        file_put_contents(
+            $path, str_replace(
+                $key.'='.$delim.$oldValue.$delim,
+                $key.'='.$delim.$request.$delim,
+                file_get_contents($path)
+            )
+        );
+    }
+
+}
 }
