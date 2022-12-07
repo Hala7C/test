@@ -25,13 +25,13 @@ class DocumentServices implements DocumentRepository
 
         $fileName =$file->getClientOriginalName();
         $file->move(public_path('uploads'), $fileName);
-
         $document=  Document::create([
             'name' => $fileName,
             'path' => 'uploads/' . $fileName,
             'status' => 'free',
             'user_id' => Auth::user()->id,
         ]);
+
         $data = ['data' => $document];
         $status = 200;
         return $response = ['data' => $data, 'status' => $status];

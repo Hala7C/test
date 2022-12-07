@@ -29,7 +29,7 @@ Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login'])
 Route::post('group/add/group', [GroupController::class, 'store'])->middleware('auth:sanctum');
 Route::get('group', [GroupController::class, 'index'])->middleware('auth:sanctum');
 Route::middleware([
-    'auth:sanctum', 'check'
+    'auth:sanctum', 'check','throttle:global'
 
 ])->group(function () {
 
@@ -59,6 +59,7 @@ Route::middleware([
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
+
 ])->group(function () {
     // Route::post('file/create', [FilesController::class, 'storeDocument']);
     Route::delete('file/delete/{id}', [FilesController::class, 'destroyDocument']);
@@ -68,21 +69,31 @@ Route::middleware([
     Route::get('/file/checkin/{id}', [FileOperationController::class, 'CheckIn']);
     Route::get('/file/checkout/{id}', [FileOperationController::class, 'CheckOut']);
     Route::post('/file/bulkCheckIn', [FileOperationController::class, 'bulkCheckIn']);
-    Route::get('/myfiles', [Display::class, 'myFiles']);
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
     Route::get('/myGroup', [Display::class, 'myGroup']);
 
+
+});
+
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+     'Uploads_count',
+    'limit_request'
+])->group(function () {
+    Route::post('file/create', [FilesController::class, 'storeDocument']);
 });
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'Uploads_count'
-])->group(function () {
-    Route::post('file/create', [FilesController::class, 'storeDocument']);
-});
 
+    'gzip'
+])->group(function () {
+    Route::get('/myfiles', [Display::class, 'myFiles']);
+});
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -93,4 +104,7 @@ Route::middleware([
     Route::post('/setting/log/level', [SystemConfiguration::class, 'logLevel']);
     Route::post('/setting/db/engine', [SystemConfiguration::class, 'db_engine']);
     Route::get('/setting/get/all', [SystemConfiguration::class, 'getCurrentEnvValue']);
+    Route::get('group/all', [GroupController::class, 'allGroup'])->middleware('auth:sanctum');
+    Route::get('Documents/all', [Display::class, 'allDocs'])->middleware('auth:sanctum');
+
 });

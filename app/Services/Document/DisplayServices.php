@@ -14,6 +14,11 @@ use Throwable;
 
 class DisplayServices implements DisplayRepository
 {
+
+    public function allDocs(){
+        $documents=Document::all();
+        return $documents;
+    }
     public function myFiles(){
 
         $user=Auth::user();
@@ -30,6 +35,7 @@ class DisplayServices implements DisplayRepository
                     $bUser_id= null;
                     $bUser_name=null;
                 }
+                $groups=Document::find($d->id)->group()->get();
                 $data->push([
                     'id'=>$d->id,
                     'name'=>$d->name,
@@ -37,7 +43,7 @@ class DisplayServices implements DisplayRepository
                     'owner_id'=>$user->id,
                     'owner_name'=>$user->name,
                     'status'=>$d->status,
-                    'group_id'=>$d->group_id,
+                    'groups'=>$groups,
                     'booked_userId'=>$bUser_id,
                     'booked_userName'=>$bUser_name,
                 ]);
@@ -92,6 +98,7 @@ class DisplayServices implements DisplayRepository
                     $bUser_name=null;
                     $owner_name=null;
                 }
+                $groups=Document::find($d->id)->group()->get();
                 $data->push([
                     'id'=>$d->id,
                     'name'=>$d->name,
@@ -99,7 +106,7 @@ class DisplayServices implements DisplayRepository
                     'owner_id'=>$d->user_id,
                     'owner_name'=>$owner_name,
                     'status'=>$d->status,
-                    'group_id'=>$d->group_id,
+                    'groups'=>$groups,
                     'booked_userId'=>$bUser_id,
                     'booked_userName'=>$bUser_name,
                 ]);
@@ -109,7 +116,7 @@ class DisplayServices implements DisplayRepository
         }else{
             $status=210;
             return $response = ['data' => 'there is no file yet', 'status' => $status];
-                    }
+            }
     }
 
 

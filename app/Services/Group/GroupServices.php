@@ -25,6 +25,13 @@ class GroupServices implements GroupRepository
         $groups = $user->groups()->paginate(4);
         return $groups;
     }
+    public function allGroup()
+    {
+
+        $groups = Group::all();
+        return $groups;
+    }
+
     public function store($name)
     {
         $id = Auth::id();

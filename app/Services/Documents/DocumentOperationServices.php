@@ -23,6 +23,7 @@ class DocumentOperationServices implements DocumentOperationRepository
     {
         $document = Document::find($file_id);
         $user = User::find($document->user_id);
+        $groups=Document::find($document->id)->group()->get();
         $data = collect();
         if ($document->status == 'free') {
             $data->push([
@@ -32,7 +33,7 @@ class DocumentOperationServices implements DocumentOperationRepository
                 'owner_id' => $user->id,
                 'owner_name' => $user->name,
                 'status' => $document->status,
-                'group_id' => $document->group_id,
+                'groups' => $groups,
             ]);
             $data = ['data' => $data];
             $status = 210;
@@ -87,7 +88,7 @@ class DocumentOperationServices implements DocumentOperationRepository
     {
         $msg = 'Fail';
         $status = 400;
-        try {
+        $x=0;
             DB::beginTransaction();
             foreach ($files  as $f) {
                 $document = Document::find($f);
@@ -99,20 +100,23 @@ class DocumentOperationServices implements DocumentOperationRepository
                         'document_id' => $document->id,
                         'date' => Carbon::now()->setTimezone("GMT+3")->format('Y-m-d H:i:s')
                     ]);
+                }else{
+                        ++$x;
                 }
+
+            }
+            if($x==0){
+                DB::commit();
                 $msg = 'booked successfully';
                 $status = 210;
             }
-            DB::commit();
-        } catch (\Exception $exp) {
-            DB::rollBack(); // Tell Laravel, "It's not you, it's me. Please don't persist to DB"
-            $data = [
-                'message' => $exp->getMessage(),
-                'status' => 'failed'
-            ];
-            $status = 400;
-            return ['data' => $data, 'status' => $status];
-        }
+            else if($x>0){
+                DB::rollBack();
+                $msg='found booked files between your request ';
+                $status = 400;
+            }
+
+
         return ['data' => $msg, 'status' => $status];
     }
 

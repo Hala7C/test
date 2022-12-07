@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Document extends Model
 {
+
+
     use HasFactory;
+
+
     protected $fillable = ['name', 'path', 'status', 'user_id', 'group_id'];
+
     public function group()
     {
         return $this->belongsToMany(Group::class, 'document_group', 'document_id', 'group_id', 'id', 'id')->withTimestamps();

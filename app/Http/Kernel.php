@@ -71,5 +71,7 @@ class Kernel extends HttpKernel
         'isUser' => \App\Http\Middleware\User::class,
         'Uploads_count'=>\App\Http\Middleware\UploadsNo::class,
         'isAdmin'=>\App\Http\Middleware\Admin::class,
+        'gzip' => \App\Http\Middleware\GzipMiddleware::class,
+        'limit_request' => \App\Http\Middleware\LimitRequestSize::class,
     ];
 }

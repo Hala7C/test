@@ -27,6 +27,12 @@ class GroupController extends Controller
         $data = $this->group_repository->index();
         return response()->json($data, 200);
     }
+    public function allGroup()
+    {
+        $data = $this->group_repository->allGroup();
+        return response()->json($data, 200);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

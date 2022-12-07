@@ -17,4 +17,5 @@ interface GroupRepository
     public function showAllFilesCanAdd($id);
     public function showAllFilesInGroup($id);
     public function deleteGroup($id);
+    public function allGroup();
 }

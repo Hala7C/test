@@ -8,5 +8,6 @@ interface DisplayRepository
     public function myGroup();
     public function documentsGroup($group_id);
     public function documentHisory($id);
+    public function allDocs();
 
 }

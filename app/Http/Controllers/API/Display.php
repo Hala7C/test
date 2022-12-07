@@ -25,6 +25,14 @@ class Display extends Controller
         }
 
 
+    public function allDocs(){
+        $response=$this->display_services->allDocs();
+        $data=$response['data'];
+        $status =  $response['status'];
+        return response()->json($data, $status);
+        }
+
+
 
 
     public function myGroup(){
