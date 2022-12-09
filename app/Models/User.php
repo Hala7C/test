@@ -28,7 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'full_name',
+        // 'full_name',
     ];
 
     /**

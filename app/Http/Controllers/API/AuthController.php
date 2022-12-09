@@ -29,7 +29,7 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', (new Password)->length(10)->requireNumeric()],
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
-            'full_name'=>['required', 'string', 'max:255', 'unique:users'],
+            // 'full_name'=>['required', 'string', 'max:255', 'unique:users'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
 
         ]);
@@ -41,7 +41,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'full_name'=>$request->full_name,
+            // 'full_name'=>$request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'user',
@@ -109,7 +109,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'  => ['required', 'string', 'max:255'],
-            'full_name'=>['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            // 'full_name'=>['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email:rfc,dns', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ]);
@@ -125,7 +125,7 @@ class AuthController extends Controller
         $user->forceFill([
             'name' =>  $request->name,
             'email' => $request->email,
-            'full_name'=>$request->full_name,
+            // 'full_name'=>$request->full_name,
         ])->save();
 
         return response()
