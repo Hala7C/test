@@ -21,9 +21,16 @@ use Throwable;
 
 class DocumentServices implements DocumentRepository
 {
-    public function storeDocument( $file){
+    public function storeDocument( $file)
+    {
 
         $fileName =$file->getClientOriginalName();
+        $exist=Document::where('name',$fileName)->get();
+        if($exist != null){
+            $status=210;
+            $data='file is duplited';
+            return $response = ['data' => $data, 'status' => $status];
+        }
         $file->move(public_path('uploads'), $fileName);
         $document=  Document::create([
             'name' => $fileName,

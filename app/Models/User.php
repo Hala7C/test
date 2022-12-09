@@ -18,17 +18,13 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     */
+
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'full_name',
+        // 'full_name',
     ];
 
     /**
