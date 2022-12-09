@@ -22,7 +22,7 @@ class LimitRequestSize
             // return response()->json($size,210);
              return response('request size must be less than 10MB',410);
         }else{
-            $next($request);
+           return $next($request);
         }
     }
     }
