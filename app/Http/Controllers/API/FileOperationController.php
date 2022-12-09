@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Services\Documents\DocumentOperationServices;
+use App\Services\Document\DocumentOperationServices;
 
 class FileOperationController extends Controller
 {

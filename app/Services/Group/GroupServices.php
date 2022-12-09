@@ -22,7 +22,9 @@ class GroupServices implements GroupRepository
         //
         $id = Auth::id();
         $user = User::where('id', $id)->firstOrFail();
-        $groups = $user->groups()->paginate(4);
+        $myGroups = $user->groups()->pluck('group_id')->toArray();
+        $groups = Group::where('id', 1)->orWhereIn('id', $myGroups)->paginate(3);
+
         return $groups;
     }
     public function allGroup()
@@ -46,15 +48,14 @@ class GroupServices implements GroupRepository
                 'group_role' => 'admin',
             ]);
             DB::commit();
-            $data = ['data' => $group];
-            $status = 200;
-            return $response = ['data' => $data, 'status' => $status];
+
+            return [$group, 200];
         } catch (Throwable $e) {
 
             DB::rollBack();
-            $data = ['message' => 'Sorry You cant create new group something is error!'];
-            $status = 401;
-            return $response = ['data' => $data, 'status' => $status];
+            $message =  'Sorry You cant create new group something is error!';
+
+            return  [$message, 401];
         }
     }
     /**
@@ -72,26 +73,22 @@ class GroupServices implements GroupRepository
             $users = DB::table('users')
                 ->whereNotIn('id', $members_id)
                 ->get();
-            $data = ['data' => $users];
-            $status = 200;
-            return $response = ['data' => $data, 'status' => $status];
+            return [$users,  200];
         }
-        $data = ['message' => 'This is the public group'];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message = 'This is the public group';
+        return [$message, 401];
     }
     public function showMemberOfGroup($id)
     {
         $group = Group::find($id);
         if ($group->id != 1) {
             $members  = $group->users()->paginate(6);
-            $data = ['data' => $members];
-            $status = 200;
-            return $response = ['data' => $data, 'status' => $status];
+
+            return [$members, 200];
         }
-        $data = ['message' => 'This is public group all user in it'];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message = ['message' => 'This is public group all user in it'];
+
+        return [$message, 404];
     }
     public function addMemberToGroup($member_id, $group_id)
     {
@@ -106,17 +103,14 @@ class GroupServices implements GroupRepository
                     'join_date' => Carbon::now(),
                     'group_role' => 'member',
                 ]);
-                $data = ['data' => $new_member];
-                $status = 201;
-                return $response = ['data' => $data, 'status' => $status];
+                return [$new_member, 201];
             }
-            $data = ['message' => 'You cant add member to this group somethig is error . Blease try again later'];
-            $status = 401;
-            return $response = ['data' => $data, 'status' => $status];
+            $message = ['message' => 'You cant add member to this group somethig is error . Blease try again later'];
+            return [$message, 404];
         }
-        $data  = ['message' => 'You cant add member to public group .He is already exist'];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message  = ['message' => 'You cant add member to public group .He is already exist'];
+
+        return [$message, 404];
     }
     /**
      * Display the specified resource.
@@ -130,7 +124,7 @@ class GroupServices implements GroupRepository
         $files = $group->documents()->paginate();
         $data = ['data' => $files];
         $status = 200;
-        return $response = ['data' => $data, 'status' => $status];
+        return [$files, 200];
     }
     public function showAllFilesCanAdd($id)
     {
@@ -140,9 +134,7 @@ class GroupServices implements GroupRepository
         $other_files = Document::whereNotIn('id', $documents)
             ->where('user_id', $user->id)
             ->get();
-        $data = ['data' => $other_files];
-        $status = 200;
-        return $response = ['data' => $data, 'status' => $status];
+        return [$other_files, 200];
     }
     public function addFileToGroupe($file_id, $group_id)
     {
@@ -153,13 +145,11 @@ class GroupServices implements GroupRepository
                 'group_id' => $group_id,
                 'document_id' => $document->id,
             ]);
-            $data = ['data' => $document];
-            $status = 200;
-            return $response = ['data' => $data, 'status' => $status];
+            return [$document, 201];
         }
-        $data = ['message' => 'Sorry you cant add this file to group something is error!!'];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message = ['message' => 'Sorry you cant add this file to group something is error!!'];
+
+        return [$message, 401];
     }
     public function deleteFileFromGroupe($id, $file_id)
     {
@@ -191,17 +181,15 @@ class GroupServices implements GroupRepository
             if ($free_file_count == $count) {
                 $group->delete();
                 $group->users()->detach();
-                $data = ['data' => $group, 'message' => 'Group deleted successfuly :)'];
-                $status = 202;
-                return $response = ['data' => $data, 'status' => $status];
+                $message = 'Group deleted successfuly :)';
+                $status = 200;
+                return [$message, 200];
             }
-            $data = ['message' => 'Group cant delete . There are files still blocked '];
-            $status = 401;
-            return $response = ['data' => $data, 'status' => $status];
+            $message = 'Group cant delete . There are files still blocked ';
+            return [$message, 404];
         }
-        $data = ['message' => 'You cant delete the public group'];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message = 'You cant delete the public group';
+        return [$message, 404];
     }
     /**
      * Remove the specified resource from storage.
@@ -228,20 +216,17 @@ class GroupServices implements GroupRepository
                     DB::table('members')->where('user_id', $member_id)
                         ->where('group_id', $id)->delete();
                     $member_deleted = User::where('id', $member_id)->first();
-                    $data = ['data' => $member_deleted, 'message' => 'You are delete member successfly :)'];
-                    $status = 202;
-                    return $response = ['data' => $data, 'status' => $status];
+                    $message = ['message' => 'You are delete member successfly :)'];
+                    $data = [$member_deleted, $message];
+                    return  [$data, 200];
                 }
-                $data = ['message' => "You cannot delete this member because he is still blocking a file"];
-                $status = 401;
-                return $response = ['data' => $data, 'status' => $status];
+                $message = ['message' => "You cannot delete this member because he is still blocking a file"];
+                return [$message, 401];
             }
-            $data = ['message' => 'You cant delete member from public group'];
-            $status = 401;
-            return $response = ['data' => $data, 'status' => $status];
+            $message = ['message' => 'You cant delete member from public group'];
+            return [$message, 401];
         }
-        $data = ['message' => 'You cant delete member You are not admin :('];
-        $status = 401;
-        return $response = ['data' => $data, 'status' => $status];
+        $message = ['message' => 'You cant delete member You are not admin :('];
+        return [$message, 401];;
     }
 }

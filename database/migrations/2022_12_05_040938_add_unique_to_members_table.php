@@ -28,6 +28,7 @@ return new class extends Migration
     {
         Schema::table('members', function (Blueprint $table) {
             //
+            $table->dropUnique(['user_id', 'group_id']);
         });
     }
 };

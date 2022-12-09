@@ -24,8 +24,8 @@ class GroupController extends Controller
     }
     public function index()
     {
-        $data = $this->group_repository->index();
-        return response()->json($data, 200);
+        $group = $this->group_repository->index();
+        return response()->json($group, 200);
     }
     public function allGroup()
     {
@@ -40,52 +40,52 @@ class GroupController extends Controller
         ]);
         $name = $request->post('name');
         $response  = $this->group_repository->store($name);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function showMemberCanAdd($id)
     {
         $response = $this->group_repository->showMemberCanAdd($id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function showMemberOfGroup($id)
     {
         $response = $this->group_repository->showMemberOfGroup($id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function addMemberToGroup(Request $request, $id)
     {
         $member_id = $request->post('user_id');
         $response = $this->group_repository->addMemberToGroup($member_id, $id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function showAllFilesInGroup($id)
     {
         $response = $this->group_repository->showAllFilesInGroup($id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function showAllFilesCanAdd($id)
     {
         $response = $this->group_repository->showAllFilesCanAdd($id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function addFileToGroupe(Request $request, $id)
     {
         $file_id = $request->post('file_id');
         $response = $this->group_repository->addFileToGroupe($file_id, $id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function deleteFileFromGroupe($id, $file_id)
@@ -98,15 +98,15 @@ class GroupController extends Controller
     public function deleteGroup($id)
     {
         $response = $this->group_repository->deleteGroup($id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
     public function deleteMember($id, $member_id)
     {
         $response = $this->group_repository->deleteMember($id, $member_id);
-        $data = $response['data'];
-        $status =  $response['status'];
+        $data = $response[0];
+        $status =  $response[1];
         return response()->json($data, $status);
     }
 }
