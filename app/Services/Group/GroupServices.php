@@ -22,9 +22,9 @@ class GroupServices implements GroupRepository
         //
         $id = Auth::id();
         $user = User::where('id', $id)->firstOrFail();
-        $groups = $user->groups()->paginate(4);
-        $public = Group::where('id', 1)->first();
-        $groups->prepend($public);
+        $myGroups = $user->groups()->pluck('group_id')->toArray();
+        $groups = Group::where('id', 1)->orWhereIn('id', $myGroups)->paginate(3);
+
         return $groups;
     }
     public function allGroup()
