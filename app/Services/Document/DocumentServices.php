@@ -25,13 +25,9 @@ class DocumentServices implements DocumentRepository
     {
 
         $fileName =$file->getClientOriginalName();
-        $exist=Document::where('name',$fileName)->get();
-        if($exist != null){
-            $status=210;
-            $data='file is duplited';
-            return $response = ['data' => $data, 'status' => $status];
-        }
-        $file->move(public_path('uploads'), $fileName);
+        $exist=Document::where('name','=',$fileName)->first();
+        if($exist == null){
+            $file->move(public_path('uploads'), $fileName);
         $document=  Document::create([
             'name' => $fileName,
             'path' => 'uploads/' . $fileName,
@@ -41,6 +37,11 @@ class DocumentServices implements DocumentRepository
 
         $data = ['data' => $document];
         $status = 200;
+        return $response = ['data' => $data, 'status' => $status];
+        }
+
+        $status=210;
+        $data='file is duplited';
         return $response = ['data' => $data, 'status' => $status];
     }
     public function destroyDocument($id){
