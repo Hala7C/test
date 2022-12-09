@@ -29,18 +29,18 @@ Route::post('/login', [App\Http\Controllers\API\AuthController::class, 'login'])
 Route::post('group/add/group', [GroupController::class, 'store'])->middleware('auth:sanctum');
 Route::get('group', [GroupController::class, 'index'])->middleware('auth:sanctum');
 Route::middleware([
-    'auth:sanctum', 'check','throttle:global'
+    'auth:sanctum', 'check', 'throttle:global'
 
 ])->group(function () {
 
     Route::get('group/mamber/of/group/{id}', [GroupController::class, 'showMemberOfGroup']);
-    Route::post('group/add/member/{id}', [GroupController::class, 'addMemberToGroup']);
-    Route::get('group/show/files/{id}', [GroupController::class, 'showAllFilesInGroup']);
-    Route::get('group/show/files/can/{id}', [GroupController::class, 'showAllFilesCanAdd']);
+    Route::post('group/add/member/{id}',     [GroupController::class, 'addMemberToGroup']);
+    Route::get('group/show/files/{id}',      [GroupController::class, 'showAllFilesInGroup']);
+    Route::get('group/show/files/can/{id}',  [GroupController::class, 'showAllFilesCanAdd']);
     Route::get('group/show/members/can/{id}', [GroupController::class, 'showMemberCanAdd']);
-    Route::post('group/add/file/{id}', [GroupController::class, 'addFileToGroupe']);
-    Route::delete('group/delete/from/group/{id}/{file_id}', [GroupController::class, 'deleteFileFromGroupe']);
-    Route::delete('group/delete/group/{id}', [GroupController::class, 'deleteGroup']);
+    Route::post('group/add/file/{id}',       [GroupController::class, 'addFileToGroupe']);
+    Route::delete('group/delete/from/group/{id}/{file_id}',     [GroupController::class, 'deleteFileFromGroupe']);
+    Route::delete('group/delete/group/{id}',                    [GroupController::class, 'deleteGroup']);
     Route::delete('group/delete/member/group/{id}/{member_id}', [GroupController::class, 'deleteMember']);
 });
 
@@ -72,15 +72,13 @@ Route::middleware([
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
     Route::get('/myGroup', [Display::class, 'myGroup']);
-
-
 });
 
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-     'Uploads_count',
+    'Uploads_count',
     'limit_request'
 ])->group(function () {
     Route::post('file/create', [FilesController::class, 'storeDocument']);
@@ -106,5 +104,4 @@ Route::middleware([
     Route::get('/setting/get/all', [SystemConfiguration::class, 'getCurrentEnvValue']);
     Route::get('group/all', [GroupController::class, 'allGroup'])->middleware('auth:sanctum');
     Route::get('Documents/all', [Display::class, 'allDocs'])->middleware('auth:sanctum');
-
 });
