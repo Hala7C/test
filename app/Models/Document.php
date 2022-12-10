@@ -34,4 +34,8 @@ class Document extends Model
     {
         return $this->hasMany(Reservation::class, 'document_id', 'id')->latest('created_at')->first();
     }
+    public function latestReservation()
+    {
+        return $this->hasMany(Reservation::class, 'document_id', 'id')->whereNull('check_out');
+    }
 }

@@ -148,12 +148,14 @@ class DocumentOperationServices implements DocumentOperationRepository
     public function CheckOut($document_id)
     {
         $document = Document::find($document_id);
-        $l = User::find(Auth::user()->id)->latestReservation();
+        $l=Document::find($document_id)->latestReservation()->get();
+        $user=User::find($l->get(0)->user_id);
+        // $luser = User::find(Auth::user()->id)->latestReservation();
         if ($document->status == 'booked') {
-            if ($l->document_id == $document_id) {
+            if ($user->id == Auth::user()->id) {
                 $document->status = 'free';
                 $document->save();
-                event('CheckOut.register', $l->id);
+                event('CheckOut.register', $l->get(0)->id);
                 $data = ['message' => 'You UNBooked the document successfully'];
                 $status = 210;
                 return ['data' => $data, 'status' => $status];

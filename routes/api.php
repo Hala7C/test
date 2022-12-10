@@ -72,6 +72,7 @@ Route::middleware([
     Route::get('/group/{id}/documents', [Display::class, 'documentsGroup']);
     Route::get('file/{id}/history', [Display::class, 'documentHisory']);
     Route::get('/myGroup', [Display::class, 'myGroup']);
+    Route::get('/myReservations', [Display::class, 'myReservations']);
 });
 
 

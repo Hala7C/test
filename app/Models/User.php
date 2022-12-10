@@ -72,6 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Reservation::class, 'user_id', 'id');
     }
+    public function bookedReservations()
+    {
+        return $this->hasMany(Reservation::class, 'user_id', 'id')->whereNull('check_out');
+    }
 
     public function latestReservation()
     {

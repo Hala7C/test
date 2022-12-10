@@ -9,5 +9,6 @@ interface DisplayRepository
     public function documentsGroup($group_id);
     public function documentHisory($id);
     public function allDocs();
+    public function myReservations();
 
 }

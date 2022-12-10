@@ -165,5 +165,32 @@ class DisplayServices implements DisplayRepository
         $status=210;
             return $response = ['data' => $data, 'status' => $status];
     }
+    public function myReservations(){
+        $user=Auth::user();
+        $data=collect();
+        $reservations=User::find($user->id)->bookedReservations()->get();
+        if($reservations == null){
+            $status=210;
+            return $response = ['data' => 'there is no reservations yet', 'status' => $status];
+        }
+        foreach($reservations as $r){
+            $d=Document::find($r->document_id);
+            $owner=User::find($d->user_id);
+            $groups=Document::find($d->id)->group()->get();
+            $data->push([
+                'id'=>$d->id,
+                'name'=>$d->name,
+                'path'=>$d->path,
+                'owner_id'=>$owner->id,
+                'owner_name'=>$owner->name,
+                'status'=>$d->status,
+                'groups'=>$groups,
+                'booked_userId'=>$user->id,
+                'booked_userName'=>$user->name,
+            ]);
+        }
+        $status=210;
+        return $response = ['data' => $data, 'status' => $status];
+       }
+    }
 
-}

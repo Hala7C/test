@@ -61,4 +61,11 @@ class Display extends Controller
         $status =  $response['status'];
         return response()->json($data, $status);
     }
+    public function myReservations()
+    {
+        $response = $this->display_services->myReservations();
+        $data = $response['data'];
+        $status =  $response['status'];
+        return response()->json($data, $status);
+    }
 }
