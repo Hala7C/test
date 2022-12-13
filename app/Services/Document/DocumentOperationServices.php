@@ -62,6 +62,10 @@ class DocumentOperationServices implements DocumentOperationRepository
                     Validator::make([$file], [
                         'file' => 'required|mimes:pdf,xlx,csv|max:2048|unique:documents,name',
                     ]);
+                        $status = 400;
+                        return ['data' => ' duplicate entry! this file is already exist !! ', 'status' => $status];
+
+
                 }
                 $file->move(public_path('uploads'), $fileName);
                 $document->name = $fileName;

@@ -88,7 +88,6 @@ Route::middleware([
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-
     'gzip'
 ])->group(function () {
     Route::get('/myfiles', [Display::class, 'myFiles']);
