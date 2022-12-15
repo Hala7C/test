@@ -47,7 +47,6 @@ Route::middleware([
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'isUser',
 ])->group(function () {
 
     Route::get('/profile', [App\Http\Controllers\API\AuthController::class, 'profile']);

@@ -43,7 +43,12 @@ class SystemConfiguration extends Controller
             if(isset($request->engine)){
                 $this->updateDotEnvValue('DB_ENGINE', $request->engine);
             }
-            return response('done',210);
+
+            $data=collect();
+            $data->push([
+                'engine'=> env('DB_ENGINE'),
+            ]);
+            return response($data,210);
     }
     public function logLevel(Request $request){
         $levels=array('debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency');
@@ -56,7 +61,12 @@ class SystemConfiguration extends Controller
             if(isset($request->level)){
                 $this->updateDotEnvValue('LOG_LEVEL', $request->level);
             }
-            return response('done',210);
+
+            $data=collect();
+            $data->push([
+                'level'=> env('LOG_LEVEL'),
+            ]);
+            return response($data,210);
     }
     public function db_connection(Request $request){
         $data=collect();
@@ -85,8 +95,16 @@ class SystemConfiguration extends Controller
         }
         DB::purge('mysql');
         DB::reconnect();
+        $data=collect();
+        $data->push([
+            'url'=> env('DATABASE_URL'),
+            'port'=> env('DB_PORT'),
+            'db_username'=> env('DB_USERNAME'),
+            'db_password'=> env('DB_PASSWORD'),
+            'db_name'=> env('DB_DATABASE'),
+        ]);
+        return response($data,210);
 
-        return response()->json(['data'=> 'done'],210);
     }
     protected function uploadsNo($key='COUNT_NO',Request $request, $delim='')
 {
@@ -111,7 +129,11 @@ class SystemConfiguration extends Controller
             )
         );
     }
-    return response('done',210);
+    $data=collect();
+    $data->push([
+        'allowed_number_of_files'=> env('COUNT_NO'),
+    ]);
+    return response($data,210);
 }
 
 protected function updateDotEnvValue($key,$request, $delim='')
