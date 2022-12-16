@@ -42,12 +42,13 @@ class SystemConfiguration extends Controller
             }
             if(isset($request->engine)){
                 $this->updateDotEnvValue('DB_ENGINE', $request->engine);
+                $data=collect();
+                $data->push([
+                    'engine'=> $request->engine,
+                ]);
             }
 
-            $data=collect();
-            $data->push([
-                'engine'=> env('DB_ENGINE'),
-            ]);
+
             return response($data,210);
     }
     public function logLevel(Request $request){
@@ -59,13 +60,13 @@ class SystemConfiguration extends Controller
             return response()->json($validator->errors(), 400);
         }
             if(isset($request->level)){
-                $this->updateDotEnvValue('LOG_LEVEL', $request->level);
+                $this->updateDotEnvValue('LOG_LEVEL', $request->level); $data=collect();
+                $data->push([
+                    'level'=> $request->level,
+                ]);
             }
 
-            $data=collect();
-            $data->push([
-                'level'=> env('LOG_LEVEL'),
-            ]);
+
             return response($data,210);
     }
     public function db_connection(Request $request){
@@ -131,7 +132,7 @@ class SystemConfiguration extends Controller
     }
     $data=collect();
     $data->push([
-        'allowed_number_of_files'=> env('COUNT_NO'),
+        'allowed_number_of_files'=> $request->number,
     ]);
     return response($data,210);
 }
