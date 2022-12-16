@@ -107,35 +107,53 @@ class SystemConfiguration extends Controller
         return response($data,210);
 
     }
-    protected function uploadsNo($key='COUNT_NO',Request $request, $delim='')
-{
+    public function uploadsNo(Request $request){
+        $validator = Validator::make($request->all(), [
+            'number'=>'numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+            if(isset($request->number)){
+                $this->updateDotEnvValue('COUNT_NO', $request->number);
+                 $data=collect();
+                $data->push([
+                    'number'=> $request->number,
+                ]);
+            }
 
-    $path = base_path('.env');
-    // get old value from current env
-    $oldValue = env($key);
 
-    // was there any change?
-    if ($oldValue === $request->number) {
-        return;
+            return response($data,210);
     }
+//     protected function uploadsNo($key='COUNT_NO',Request $request, $delim='')
+// {
 
-    // rewrite file content with changed data
-    if (file_exists($path)) {
-        // replace current value with new value
-        file_put_contents(
-            $path, str_replace(
-                $key.'='.$delim.$oldValue.$delim,
-                $key.'='.$delim.$request->number.$delim,
-                file_get_contents($path)
-            )
-        );
-    }
-    $data=collect();
-    $data->push([
-        'allowed_number_of_files'=> $request->number,
-    ]);
-    return response($data,210);
-}
+//     $path = base_path('.env');
+//     // get old value from current env
+//     $oldValue = env($key);
+
+//     // was there any change?
+//     if ($oldValue === $request->number) {
+//         return;
+//     }
+
+//     // rewrite file content with changed data
+//     if (file_exists($path)) {
+//         // replace current value with new value
+//         file_put_contents(
+//             $path, str_replace(
+//                 $key.'='.$delim.$oldValue.$delim,
+//                 $key.'='.$delim.$request->number.$delim,
+//                 file_get_contents($path)
+//             )
+//         );
+//     }
+//     $data=collect();
+//     $data->push([
+//         'allowed_number_of_files'=> $request->number,
+//     ]);
+//     return response($data,210);
+// }
 
 protected function updateDotEnvValue($key,$request, $delim='')
 {
