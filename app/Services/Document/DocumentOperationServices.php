@@ -23,8 +23,13 @@ class DocumentOperationServices implements DocumentOperationRepository
     {
         $document = Document::find($file_id);
         $user = User::find($document->user_id);
+        $lastReservation=Document::find($file_id)->latestReservation()->first();
+        $bookedUser=false;
+        if($lastReservation->user_id ==$user->id){
+            $bookedUser=true;
+        }
         $data = collect();
-        if ($document->status == 'free') {
+        if ($document->status == 'free' || $bookedUser) {
             $data->push([
                 'id' => $document->id,
                 'name' => $document->name,
@@ -91,8 +96,9 @@ class DocumentOperationServices implements DocumentOperationRepository
     {
         $msg = 'Fail';
         $status = 400;
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
+
             foreach ($files  as $f) {
                 $document = Document::find($f);
                 if ($document->status == 'free') {
@@ -122,8 +128,8 @@ class DocumentOperationServices implements DocumentOperationRepository
 
     public function CheckIn($document_id)
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $document = Document::find($document_id);
             if ($document->status == 'free') {
                 $document->status = 'booked';
