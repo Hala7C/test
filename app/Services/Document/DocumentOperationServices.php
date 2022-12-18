@@ -96,9 +96,8 @@ class DocumentOperationServices implements DocumentOperationRepository
     {
         $msg = 'Fail';
         $status = 400;
-        DB::beginTransaction();
-        try {
-
+        $x=0;
+            DB::beginTransaction();
             foreach ($files  as $f) {
                 $document = Document::find($f);
                 if ($document->status == 'free') {
@@ -109,23 +108,25 @@ class DocumentOperationServices implements DocumentOperationRepository
                         'document_id' => $document->id,
                         'date' => Carbon::now()->setTimezone("GMT+3")->format('Y-m-d H:i:s')
                     ]);
+                }else{
+                        ++$x;
                 }
+
+            }
+            if($x==0){
+                DB::commit();
                 $msg = 'booked successfully';
                 $status = 210;
             }
-            DB::commit();
-        } catch (\Exception $exp) {
-            DB::rollBack(); // Tell Laravel, "It's not you, it's me. Please don't persist to DB"
-            $data = [
-                'message' => $exp->getMessage(),
-                'status' => 'failed'
-            ];
-            $status = 400;
-            return ['data' => $data, 'status' => $status];
-        }
+            else if($x>0){
+                DB::rollBack();
+                $msg='found booked files between your request ';
+                $status = 400;
+            }
+
+
         return ['data' => $msg, 'status' => $status];
     }
-
     public function CheckIn($document_id)
     {
         DB::beginTransaction();

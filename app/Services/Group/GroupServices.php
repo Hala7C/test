@@ -29,8 +29,7 @@ class GroupServices implements GroupRepository
     }
     public function allGroup()
     {
-
-        $groups = Group::all();
+        $groups = Group::all()->except(1);
         return $groups;
     }
 
