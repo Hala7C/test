@@ -29,7 +29,20 @@ class DocumentOperationServices implements DocumentOperationRepository
             $bookedUser=true;
         }
         $data = collect();
-        if ($document->status == 'free' || $bookedUser) {
+        if ($document->status == 'free'  ) {
+            $data->push([
+                'id' => $document->id,
+                'name' => $document->name,
+                'path' => $document->path,
+                'owner_id' => $user->id,
+                'owner_name' => $user->name,
+                'status' => $document->status,
+                'group_id' => $document->group_id,
+            ]);
+            $data = ['data' => $data];
+            $status = 210;
+            return ['data' => $data, 'status' => $status];
+        }else if($bookedUser){
             $data->push([
                 'id' => $document->id,
                 'name' => $document->name,
