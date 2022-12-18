@@ -17,7 +17,8 @@ class DisplayServices implements DisplayRepository
 
     public function allDocs(){
         $documents=Document::all();
-        return $documents;
+        $status=210;
+        return $response = ['data' => $documents, 'status' => $status];
     }
     public function myFiles(){
 

@@ -101,6 +101,6 @@ Route::middleware([
     Route::post('/setting/log/level', [SystemConfiguration::class, 'logLevel']);
     Route::post('/setting/db/engine', [SystemConfiguration::class, 'db_engine']);
     Route::get('/setting/get/all', [SystemConfiguration::class, 'getCurrentEnvValue']);
-    Route::get('group/all', [GroupController::class, 'allGroup'])->middleware('auth:sanctum');
-    Route::get('Documents/all', [Display::class, 'allDocs'])->middleware('auth:sanctum');
+    Route::get('/group/all', [GroupController::class, 'allGroup'])->middleware('auth:sanctum');
+    Route::get('/Documents/all', [Display::class, 'allDocs'])->middleware('auth:sanctum');
 });
