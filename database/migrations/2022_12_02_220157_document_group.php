@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('document_group', function (Blueprint $table) {
             $table->id();
             $table->foreignId('group_id')->nullable()->constrained('groups')->nullOnDelete();
-            $table->foreignId('document_id')->constrained('documents');
+            $table->foreignId('document_id')->nullable()->constrained('documents')->nullOnDelete();
             $table->timestamps();
         });
     }
