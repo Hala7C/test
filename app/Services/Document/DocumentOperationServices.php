@@ -25,11 +25,14 @@ class DocumentOperationServices implements DocumentOperationRepository
         $user = User::find($document->user_id);
         $lastReservation=Document::find($file_id)->latestReservation()->first();
         $bookedUser=false;
-        if($lastReservation->user_id ==$user->id){
-            $bookedUser=true;
+        if($lastReservation != null){
+            if($lastReservation->user_id ==$user->id){
+                $bookedUser=true;
+            }
         }
+
         $data = collect();
-        if ($document->status == 'free'  ) {
+        if($bookedUser){
             $data->push([
                 'id' => $document->id,
                 'name' => $document->name,
@@ -42,7 +45,8 @@ class DocumentOperationServices implements DocumentOperationRepository
             $data = ['data' => $data];
             $status = 210;
             return ['data' => $data, 'status' => $status];
-        }else if($bookedUser){
+        }
+        if ($document->status == 'free' ) {
             $data->push([
                 'id' => $document->id,
                 'name' => $document->name,
