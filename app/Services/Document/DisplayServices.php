@@ -16,9 +16,20 @@ class DisplayServices implements DisplayRepository
 {
 
     public function allDocs(){
-        $documents=Document::all();
+        $d=Document::all();
+        $user=Auth::user();
+        $data=collect();
+        $data->push([
+            'id'=>$d->id,
+            'name'=>$d->name,
+            'path'=>$d->path,
+            'owner_id'=>$user->id,
+            'owner_name'=>$user->name,
+            'status'=>$d->status,
+
+        ]);
         $status=210;
-        return $response = ['data' => $documents, 'status' => $status];
+        return $response = ['data' => $data, 'status' => $status];
     }
     public function myFiles(){
 
