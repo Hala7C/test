@@ -81,12 +81,13 @@ class DocumentOperationServices implements DocumentOperationRepository
                         'file' => 'required|mimes:pdf,xlx,csv|max:2048',
                     ]);
                 } else {
-                    Validator::make([$file], [
-                        'file' => 'required|mimes:pdf,xlx,csv|max:2048|unique:documents,name',
-                    ]);
+                    $documents=Document::all()->except($fileId);
+                    foreach($documents as $d){
+                    if($fileName == $d->name){
                         $status = 400;
                         return ['data' => ' duplicate entry! this file is already exist !! ', 'status' => $status];
-
+                    }
+                    }
 
                 }
                 $file->move(public_path('uploads'), $fileName);
