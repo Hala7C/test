@@ -30,7 +30,7 @@ class GroupServices implements GroupRepository
     public function allGroup()
     {
         $groups = Group::all()->except(1);
-        return  [$groups, 200];
+        return  $groups;
     }
 
     public function store($name)

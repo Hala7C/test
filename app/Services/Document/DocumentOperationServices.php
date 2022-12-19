@@ -116,7 +116,7 @@ class DocumentOperationServices implements DocumentOperationRepository
         $x=0;
             DB::beginTransaction();
             foreach ($files  as $f) {
-                $document = Document::find($f);
+                $document = Document::lockForUpdate()->find($f);
                 if ($document->status == 'free') {
                     $document->status = 'booked';
                     $document->save();
@@ -147,8 +147,11 @@ class DocumentOperationServices implements DocumentOperationRepository
     public function CheckIn($document_id)
     {
         DB::beginTransaction();
+        // DB::transaction(function(){
+
+        // });
         try {
-            $document = Document::find($document_id);
+            $document = Document::lockForUpdate()->find($document_id);
             if ($document->status == 'free') {
                 $document->status = 'booked';
                 $document->save();
