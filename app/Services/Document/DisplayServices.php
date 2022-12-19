@@ -16,9 +16,10 @@ class DisplayServices implements DisplayRepository
 {
 
     public function allDocs(){
-        $d=Document::all();
-        $user=Auth::user();
+        $documents=Document::all();
         $data=collect();
+        foreach($documents as $d){
+            $user=User::find($d->user_id);
         $data->push([
             'id'=>$d->id,
             'name'=>$d->name,
@@ -28,6 +29,7 @@ class DisplayServices implements DisplayRepository
             'status'=>$d->status,
 
         ]);
+    }
         $status=210;
         return $response = ['data' => $data, 'status' => $status];
     }
